@@ -1,6 +1,10 @@
 rem
 This is a utility (script) to fully remove windows defender. USE THIS AT YOUR OWN RISK! YOU AS THE USER ACCEPT ALL LIABILITY FOR RUNNING WITHOUT AN ANTIVIRUS. NOTE: THIS WILL ONLY WORK IF WINDOWS IS INSTALLED, AND YOU ARE IN WINDOWS PE (Bootable Media, eg. Installation media built with an official Microsoft ISO.) This script assumes you've already run the defender removal script from https://privacy.sexy as either an administrator or TrustedInstaller/SYSTEM (using either PSEXEC or NSudo))
 
+rem
+
+rem This script assumes that C is your drive where windows is installed, as is the case for most systems.  
+
 
 
 
@@ -14,40 +18,79 @@ takeown /f "Windows Defender" /r
 pause
 
 
-rem for the next part you may have to manually say yes to everything. Just type the letter y and you'll be set if you see it asking you. 
-
-del /f "*" /s
-erase /f "*" /s /q
-dir
-cd ..
-cd "Windows Defender Advanced Threat Protection"
-icacls * /grant %username%:f :r
-icacls "Windows Defender Advanced Threat Protection" /grant %username%:f :r
-takeown /f "Windows Defender Advanced Threat Protection" /r
-
-
-
-
-
-pause
+ECHO For the next part you may have to manually say yes to everything. Just type the letter y and you'll be set if you see it asking you. Based off experience, you should not have to interact with it. However YMMV (Your mileage may vary) based on your configuration.  
 
 cd .. 
 cd /
 cd C:/ProgramData/Microsoft
 
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
 
+cd ..
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender Advanced Threat Protection"
+icacls "Windows Defender Advanced Threat Protection" /grant %username%:f :r
+takeown /f Windows Defender Advanced Threat Protection /r
+cd..
+
+
+)else(
+IF NOT EXIST "C:/ProgramData/Microsoft/please"
+echo Renaming Main Windows Defender Folder
 ren "Windows Defender" please
-ren "Windows Defender Advanced Threat Protection" fruitsnackia
 icacls "please" /grant %username%:f :r
 takeown /f "please" /r
-icacls "please" /grant %username%:f :r
-takeown /f please /r
+cd ..
+IF NOT EXIST "C:/ProgramData/Microsoft/"fruitsnackia"
+echo Renaming Windows Defender ATP folder
+ren "Windows Defender Advanced Threat Protection" fruitsnackia
 icacls fruitsnackia /grant %username%:f :r
 takeown /f "fruitsnackia" /r
+cd..
 
-REM Fruitsnackia..... OMNOMNOM! (if you don't know what this is a reference to... I dont like you, respectfully. Google it if you have a chance.... OK OK I hear you.. back to the task at hand. No need to get all bossy!)
+)else(
+
+IF EXIST C:/ProgramData/Microsoft/fruitsnackia
+ECHO deleting renamed Windows Defender ATP folder
+erase /f C:/ProgramData/Microsoft/fruitsnackia /s /q
+erase /f C:/ProgramData/Microsoft/fruitsnackia/* /s /q
+
+IF EXIST C:/ProgramData/Microsoft/please
+ECHO deleting renamed Windows Defender folder
+erase /f C:/ProgramData/Microsoft/please/* /s /q
+erase /f C:/ProgramData/Microsoft/please /s /q
+
+)
+
+IF EXIST C:/Program Files (x86)
+cd "Program Files (x86)"
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+IF EXIST "Windows Defender Advanced Threat Protection" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+cd /d X:
+cd Windows
+cd System32
+)
 
 
 
+)else(
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender"
+ECHO Windows Defender main directory does not exist, yay!
+
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender Advanced Threat Protection"
+ECHO Windows Defender Advanced Threat Protection directory has ceased to exist, yippee!
+
+ECHO Fruitsnackia..... OMNOMNOM!  
+)
 
  
