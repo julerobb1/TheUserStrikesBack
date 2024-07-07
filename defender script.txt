@@ -30,36 +30,7 @@ icacls "Windows Defender Advanced Threat Protection" /grant %username%:f :r
 takeown /f Windows Defender Advanced Threat Protection /r
 cd..
 
-)else(
-IF NOT EXIST "C:/ProgramData/Microsoft/please"
-echo Renaming Main Windows Defender Folder
-ren "Windows Defender" please
-icacls "please" /grant %username%:f :r
-takeown /f "please" /r
-cd ..
-IF NOT EXIST "C:/ProgramData/Microsoft/"fruitsnackia"
-echo Renaming Windows Defender ATP folder
-ren "Windows Defender Advanced Threat Protection" fruitsnackia
-icacls fruitsnackia /grant %username%:f :r
-takeown /f "fruitsnackia" /r
-cd..
 
-)else(
-
-IF EXIST C:/ProgramData/Microsoft/fruitsnackia
-ECHO deleting renamed Windows Defender ATP folder
-erase /f C:/ProgramData/Microsoft/fruitsnackia /s /q
-erase /f C:/ProgramData/Microsoft/fruitsnackia/* /s /q
-
-IF EXIST C:/ProgramData/Microsoft/please
-ECHO deleting renamed Windows Defender folder
-erase /f C:/ProgramData/Microsoft/please/* /s /q
-erase /f C:/ProgramData/Microsoft/please /s /q
-
-)
-
-IF EXIST C:/Program Files (x86)/Windows Defender
-IF EXIST C:/
 
 
 REM Fruitsnackia..... OMNOMNOM! 
