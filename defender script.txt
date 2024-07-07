@@ -90,7 +90,10 @@ ECHO Windows Defender main directory does not exist, yay!
 IF NOT EXIST "C:/Program Files (x86)/Windows Defender Advanced Threat Protection"
 ECHO Windows Defender Advanced Threat Protection directory has ceased to exist, yippee!
 
-ECHO Fruitsnackia..... OMNOMNOM!  
+ECHO Fruitsnackia..... OMNOMNOM!
+ECHO I am in no way affiliated with general mills or any of their brands. Fruitsnackia belongs to them. Not me. 
 )
+
+
 
  
