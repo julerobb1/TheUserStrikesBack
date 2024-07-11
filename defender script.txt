@@ -1,48 +1,26 @@
-# Check if we're running in WinPE/WinRE
-if (-not ($env:PROCESSOR_ARCHITECTURE -eq "AMD64" -and $env:WINDIR -like "*WINPE*" -or $env:WINDIR -like "*WINRE*")) {
-  Write-Error "This script must be run in WinPE/WinRE environment."
-  Exit 1
-}
+:: Check if we're running in WinPE/WinRE
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" if "%WINDIR%" == "%WINDIR:~0,7%WINPE%" goto winpe_or_re
+if "%WINDIR%" == "%WINDIR:~0,7%WINRE%" goto winre
+echo You must run this script from either Windows Recovery Environment (WinRE) or Windows Installation Media (WinPE).
+pause
+exit /b 1
 
-# Check if we're running from the correct directory structure
-cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
-if ($LASTEXITCODE -ne 0) {
-  Write-Error "Not in correct directory structure. Aborting."
-  Exit 1
-}
-
-if "%windir%\system32\wpeinit.exe" exist (
-    echo Windows PE detected.
-) else if "%SYSTEM_DRIVE%\Windows\System32\Recovery" exist (
-    echo WinRE detected.
-) else (
-    echo Windows install media detected.
-)
-
-cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
-if errorlevel 1 (
+:winpe_or_re
+:: Check if we're running from the correct directory structure
+if not exist "%SYSTEM_DRIVE%\ProgramData\Microsoft\" (
     echo Not in correct directory structure. Aborting.
     pause
     exit /b 1
 )
 
-set "SYSTEM_DRIVE=%SystemDrive%"
-
-if "%windir%\system32\wpeinit.exe" exist (
+:: Check the environment
+if exist "%windir%\system32\wpeinit.exe" (
     echo Windows PE detected.
-) else if "%SYSTEM_DRIVE%\Windows\System32\Recovery" exist (
+) else if exist "%SYSTEM_DRIVE%\Windows\System32\Recovery" (
     echo WinRE detected.
 ) else (
     echo Windows install media detected.
 )
-
-cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
-if errorlevel 1 (
-    echo Not in correct directory structure. Aborting.
-    pause
-    exit /b 1
-)
-
 
 rem
 This is a utility (script) to fully remove windows defender. USE THIS AT YOUR OWN RISK! YOU AS THE USER ACCEPT ALL LIABILITY FOR RUNNING WITHOUT AN ANTIVIRUS. NOTE: THIS WILL ONLY WORK IF WINDOWS IS INSTALLED, AND YOU ARE IN WINDOWS PE (Bootable Media, eg. Installation media built with an official Microsoft ISO.) This script assumes you've already run the defender removal script from https://privacy.sexy as either an administrator or TrustedInstaller/SYSTEM (using either PSEXEC or NSudo))
