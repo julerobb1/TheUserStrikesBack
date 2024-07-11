@@ -1,7 +1,57 @@
+# Check if we're running in WinPE/WinRE
+if (-not ($env:PROCESSOR_ARCHITECTURE -eq "AMD64" -and $env:WINDIR -like "*WINPE*" -or $env:WINDIR -like "*WINRE*")) {
+  Write-Error "This script must be run in WinPE/WinRE environment."
+  Exit 1
+}
+
+# Check if we're running from the correct directory structure
+cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "Not in correct directory structure. Aborting."
+  Exit 1
+}
+
+if "%windir%\system32\wpeinit.exe" exist (
+    echo Windows PE detected.
+) else if "%SYSTEM_DRIVE%\Windows\System32\Recovery" exist (
+    echo WinRE detected.
+) else (
+    echo Windows install media detected.
+)
+
+cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
+if errorlevel 1 (
+    echo Not in correct directory structure. Aborting.
+    pause
+    exit /b 1
+)
+
+set "SYSTEM_DRIVE=%SystemDrive%"
+
+if "%windir%\system32\wpeinit.exe" exist (
+    echo Windows PE detected.
+) else if "%SYSTEM_DRIVE%\Windows\System32\Recovery" exist (
+    echo WinRE detected.
+) else (
+    echo Windows install media detected.
+)
+
+cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
+if errorlevel 1 (
+    echo Not in correct directory structure. Aborting.
+    pause
+    exit /b 1
+)
+
+
 rem
 This is a utility (script) to fully remove windows defender. USE THIS AT YOUR OWN RISK! YOU AS THE USER ACCEPT ALL LIABILITY FOR RUNNING WITHOUT AN ANTIVIRUS. NOTE: THIS WILL ONLY WORK IF WINDOWS IS INSTALLED, AND YOU ARE IN WINDOWS PE (Bootable Media, eg. Installation media built with an official Microsoft ISO.) This script assumes you've already run the defender removal script from https://privacy.sexy as either an administrator or TrustedInstaller/SYSTEM (using either PSEXEC or NSudo))
 
+rem
 
+rem This script assumes that C is your drive where windows is installed, as is the case for most systems.  
+
+echo This script has two parts, the first part attempts to disable Windows defender. The first part can be run normally on windows, assuming YOU ARE THE ADMINISTRATOR of the PC. The second part actually removes Windows Defender, but retains Windows firewall, windows upadate and everyyhing else. It removes Windows Defender and its drivers, scheduled tasks for it, services and the associated features, eg. App Guard, etc. 
 
 
 cd /d C:/ProgramData
@@ -9,44 +59,100 @@ cd Microsoft
 icacls * /grant %username%:f :r
 icacls "Windows Defender" /grant %username%:f :r
 takeown /f "Windows Defender" /r
-
+chdir
 
 pause
 
 
-rem for the next part you may have to manually say yes to everything. Just type the letter y and you'll be set if you see it asking you. 
+ECHO For the next part you may have to manually say yes to everything. Just type the letter y and you'll be set if you see it asking you. Based off experience, you should not have to interact with it. However YMMV (Your mileage may vary) based on your configuration.  
 
-del /f "*" /s
-erase /f "*" /s /q
-dir
+cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
+if errorlevel 1 (
+    echo Not in correct directory structure. Aborting.
+    pause
+    exit /b 1
+)
+
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+
 cd ..
-cd "Windows Defender Advanced Threat Protection"
-icacls * /grant %username%:f :r
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender Advanced Threat Protection"
 icacls "Windows Defender Advanced Threat Protection" /grant %username%:f :r
-takeown /f "Windows Defender Advanced Threat Protection" /r
+takeown /f Windows Defender Advanced Threat Protection /r
+cd..
+
+cd "C:\ProgramData\Microsoft\Windows Defender\Platform"
+icacls * /grant %username%:f :r
+takeown /f * /r
+
+IF EXIST 4.18.24050.7-0
+cd 4.18.24050.7-0
+icacls * /grant %username%:f :r
+takeown /f * /r
 
 
 
 
-
-pause
-
-cd .. 
-cd /
-cd C:/ProgramData/Microsoft
-
-
+)else(
+IF NOT EXIST "C:/ProgramData/Microsoft/please"
+echo Renaming Main Windows Defender Folder
 ren "Windows Defender" please
-ren "Windows Defender Advanced Threat Protection" fruitsnackia
 icacls "please" /grant %username%:f :r
 takeown /f "please" /r
-icacls "please" /grant %username%:f :r
-takeown /f please /r
+cd ..
+IF NOT EXIST "C:/ProgramData/Microsoft/"fruitsnackia"
+echo Renaming Windows Defender ATP folder
+ren "Windows Defender Advanced Threat Protection" fruitsnackia
 icacls fruitsnackia /grant %username%:f :r
 takeown /f "fruitsnackia" /r
+cd..
 
-REM Fruitsnackia..... OMNOMNOM! (if you don't know what this is a reference to... I dont like you, respectfully. Google it if you have a chance.... OK OK I hear you.. back to the task at hand. No need to get all bossy!)
+)else(
 
+IF EXIST C:/ProgramData/Microsoft/fruitsnackia
+ECHO deleting renamed Windows Defender ATP folder
+erase /f C:/ProgramData/Microsoft/fruitsnackia /s /q
+erase /f C:/ProgramData/Microsoft/fruitsnackia/* /s /q
+
+IF EXIST C:/ProgramData/Microsoft/please
+ECHO deleting renamed Windows Defender folder
+erase /f C:/ProgramData/Microsoft/please/* /s /q
+erase /f C:/ProgramData/Microsoft/please /s /q
+
+)
+
+IF EXIST C:/Program Files (x86)
+cd "Program Files (x86)"
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+IF EXIST "Windows Defender Advanced Threat Protection" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+cd /d X:
+cd Windows
+cd System32
+)
+
+
+
+)else(
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender"
+ECHO Windows Defender main directory does not exist, yay!
+
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender Advanced Threat Protection"
+ECHO Windows Defender Advanced Threat Protection directory has ceased to exist, yippee!
+
+ECHO Fruitsnackia..... OMNOMNOM!
+ECHO I am in no way affiliated with general mills or any of their brands. Fruitsnackia belongs to them. Not me. 
+)
 
 
 
