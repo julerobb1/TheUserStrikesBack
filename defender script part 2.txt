@@ -1,0 +1,125 @@
+:: Check if we're running in WinPE/WinRE
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" if "%WINDIR%" == "%WINDIR:~0,7%WINPE%" goto winpe_or_re
+if "%WINDIR%" == "%WINDIR:~0,7%WINRE%" goto winre
+echo You must run this script from either Windows Recovery Environment (WinRE) or Windows Installation Media (WinPE).
+pause
+exit /b 1
+
+:winpe_or_re
+:: Check if we're running from the correct directory structure
+if not exist "%SYSTEM_DRIVE%\ProgramData\Microsoft\" (
+    echo Not in correct directory structure. Aborting.
+    pause
+    exit /b 1
+)
+
+:: Check the environment
+if exist "%windir%\system32\wpeinit.exe" (
+    echo Windows PE detected.
+) else if exist "%SYSTEM_DRIVE%\Windows\System32\Recovery" (
+    echo WinRE detected.
+) else (
+    echo Windows install media detected.
+)
+
+cd /d C:/ProgramData
+cd Microsoft
+icacls * /grant %username%:f :r
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+chdir
+
+pause
+
+cd /d %SYSTEM_DRIVE%\ProgramData\Microsoft > nul
+if errorlevel 1 (
+    echo Not in correct directory structure. Aborting.
+    pause
+    exit /b 1
+)
+
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+
+cd ..
+IF EXIST "C:/ProgramData/Microsoft/"Windows Defender Advanced Threat Protection"
+icacls "Windows Defender Advanced Threat Protection" /grant %username%:f :r
+takeown /f Windows Defender Advanced Threat Protection /r
+cd..
+
+cd "C:\ProgramData\Microsoft\Windows Defender\Platform"
+icacls * /grant %username%:f :r
+takeown /f * /r
+
+IF EXIST 4.18.24050.7-0
+cd 4.18.24050.7-0
+icacls * /grant %username%:f :r
+takeown /f * /r
+
+
+
+
+)else(
+IF NOT EXIST "C:/ProgramData/Microsoft/please"
+echo Renaming Main Windows Defender Folder
+ren "Windows Defender" please
+icacls "please" /grant %username%:f :r
+takeown /f "please" /r
+cd ..
+IF NOT EXIST "C:/ProgramData/Microsoft/"fruitsnackia"
+echo Renaming Windows Defender ATP folder
+ren "Windows Defender Advanced Threat Protection" fruitsnackia
+icacls fruitsnackia /grant %username%:f :r
+takeown /f "fruitsnackia" /r
+cd..
+
+)else(
+
+IF EXIST C:/ProgramData/Microsoft/fruitsnackia
+ECHO deleting renamed Windows Defender ATP folder
+erase /f C:/ProgramData/Microsoft/fruitsnackia /s /q
+erase /f C:/ProgramData/Microsoft/fruitsnackia/* /s /q
+
+IF EXIST C:/ProgramData/Microsoft/please
+ECHO deleting renamed Windows Defender folder
+erase /f C:/ProgramData/Microsoft/please/* /s /q
+erase /f C:/ProgramData/Microsoft/please /s /q
+
+)
+
+IF EXIST C:/Program Files (x86)
+cd "Program Files (x86)"
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+IF EXIST "Windows Defender Advanced Threat Protection" (
+icacls "Windows Defender" /grant %username%:f :r
+takeown /f "Windows Defender" /r
+erase /f "Windows Defender" /s /q
+
+
+cd /d X:
+cd Windows
+cd System32
+)
+
+
+)else(
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender"
+ECHO Windows Defender main directory does not exist, yay!
+
+IF NOT EXIST "C:/Program Files (x86)/Windows Defender Advanced Threat Protection"
+ECHO Windows Defender Advanced Threat Protection directory has ceased to exist, yippee!
+
+ECHO Fruitsnackia..... OMNOMNOM!
+ECHO I am in no way affiliated with general mills or any of their brands. Fruitsnackia belongs to them. Not me. 
+)
+
+
+
+
+
+ 
