@@ -26,18 +26,6 @@ if exist "%USERPROFILE%\Desktop\BaconPancakes\Hawking.txt" (
     echo Creating the "Hawking.txt" file...
 )
 
-:: Display a random message dialog box using msg.exe
-set /a msg_random=%random% %% 2
-if %msg_random% == 0 goto bacon_pancakes_quote
-if %msg_random% == 1 goto shrek_quote
-
-:b integration with bacon_pancakes_quote
-msg * Bacon pancakes\nMaking Bacon Pancakes\nTake some bacon and I put it in a pancake\nBacon Pancakes\nThat's what it's gonna make\nBacon Pancake!
-pause
-
-:shrek_quote
-msg * We can stay up late, swapping manly stories, and in the morning, I'm making waffles!
-pause
 
 :: Create a restore point and encourage the user to create a System Image/Backup and/or File History drive
 start "" cmd.exe /k "%SystemRoot%\System32\sdclt.exe"
@@ -1127,13 +1115,6 @@ set folders="boot sources support efi"
 :: Set the icon file name
 set iconfile="autorun.inf"
 
-:: Set the default media player
-set "media_player=%windir%\explorer.exe"
-
-:: Set the download file path and URL
-set "download_file=http://example.com/backup_file.mp3"
-set "file_path=%cd%\backup_file.mp3"
-
 :: Check if the user is an administrator
 net session >nul 2>&1 | find /i "logged on locally" > nul
 if %errorlevel% neq 0 (
@@ -1179,26 +1160,6 @@ for /f "tokens=*" %%d in ('wmic path win32_logicaldisk where "driveType='4'" get
             )
         ) else (
             echo Drive !drive! does not have the correct icon
-
-            :: Download and play a file as a backup
-            powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%download_file%', '%file_path%')"
-            %media_player% "%file_path%
-
-            :: Check if volume is muted
-            for /f "tokens=*" %%a in ('wmic path mmsystem get muted') do set "muted=%%a"
-
-            :: Unmute the volume if it's currently muted and not an administrator or everything failed
-            if /i "%muted%"=="1" && (%is_admin% equ 0 || errorlevel 1) (
-                %systemroot%\system32\sndvol32.exe /m 0 & timeout /t 0 & %systemroot%\system32\sndvol32.exe /m 1
-            )
-
-            :wait_for_file_to_finish_playing
-            timeout /t 10 & %media_player% "%file_path%"
-
-            :: Mute the volume again and exit with errorlevel 1 if not an administrator or everything failed
-            %systemroot%\system32\sndvol32.exe /m 1 & timeout /t 0 & %systemroot%\system32\sndvol32.exe /m 1 & endlocal & exit /b 1
-
-            del "%file_path%"
         )
     )
 )
