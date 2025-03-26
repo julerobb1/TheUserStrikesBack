@@ -1,3 +1,6 @@
+
+So I wanted to say that as of 3/25/25, I have had multiple instances of deleting my updates to this projet (Gotta love thinking you have a backup copy....) and come to realization each definition update to defender changes the version of the folders. I am going to figure out a way to make it so it dynamically updates the version at run time, and probaly move this away from batch scripting, as I don't want MSFT catching on. It's bad enough I have to wedge my way into the OS this deeply just to remove an item that is supposed to be helpful.. but stay tuned for updates!!
+___________________________________________________________________________
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
